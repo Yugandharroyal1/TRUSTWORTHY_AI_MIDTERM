@@ -28,8 +28,8 @@ The dataset is stored in Google Drive:
 COVID-19 CT scan lesion segmentation dataset
  DATASET
  
-  ├── frames/   # Contains CT scan images
-  ├── masks/    # Contains segmentation masks
+  frames/   # Contains CT scan images
+  masks/    # Contains segmentation masks
  Mount Google Drive & Set Paths
 
 python
