@@ -1,0 +1,10 @@
+import streamlit as st
+import requests
+st.title("COVID-19 CT Scan Segmentation")
+
+uploaded_file = st.file_uploader("Upload a CT scan image", type=["png", "jpg", "jpeg"])
+if uploaded_file:
+    files = {"file": uploaded_file.getvalue()}
+    response = requests.post("http://localhost:8000/predict/", files=files)
+    if response.status_code == 200:
+        st.image(response.json()["segmented_image"], caption="Segmented Output")

@@ -1,0 +1,21 @@
+from fastapi import FastAPI, UploadFile, File
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
+import cv2
+from io import BytesIO
+
+app = FastAPI()
+model = tf.keras.models.load_model("/content/drive/MyDrive/COVID/model_weights.h5")
+
+@app.post("/predict/")
+async def predict(file: UploadFile = File(...)):
+    image = load_img(BytesIO(await file.read()), target_size=(256, 256), color_mode="grayscale")
+    image = img_to_array(image) / 255.0
+    image = np.expand_dims(image, axis=0)
+
+    prediction = model.predict(image)[0]
+    segmented = (prediction > 0.5).astype(np.uint8) * 255
+
+    _, buffer = cv2.imencode(".png", segmented)
+    return {"segmented_image": buffer.tobytes()}
