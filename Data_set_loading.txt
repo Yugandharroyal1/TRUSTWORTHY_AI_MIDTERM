@@ -1,0 +1,17 @@
+from google.colab import drive
+import os
+
+# Mount Google Drive
+drive.mount('/content/drive')
+
+# Define dataset paths
+base_path = "/content/drive/MyDrive/COVID/"
+frame_path = os.path.join(base_path, "frames")  # CT scan images
+mask_path = os.path.join(base_path, "masks")    # Segmentation masks
+
+# Verify folders
+if not os.path.exists(frame_path) or not os.path.exists(mask_path):
+    print(" Error: Dataset folders are missing!")
+else:
+    print(f" Total CT scan images: {len(os.listdir(frame_path))}")
+    print(f" Total segmentation masks: {len(os.listdir(mask_path))}")

@@ -1,0 +1,6 @@
+model = unet_resnet()
+model.fit(train_images, train_masks, epochs=10, batch_size=8, validation_split=0.2)
+
+# Save the model
+model.save("/content/drive/MyDrive/COVID/model_weights.h5")
+print("✅ Model trained and saved successfully!")
