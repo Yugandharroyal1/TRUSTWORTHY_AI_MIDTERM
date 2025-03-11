@@ -1,4 +1,5 @@
-COVID-19 CT Scan Segmentation Using Hybrid Deep Learning Objective
+# COVID-19 CT Scan Segmentation Using Hybrid Deep Learning Objective
+
 
 Objective
 The goal of this project is to segment COVID-19-infected lung regions from CT scans using a Hybrid Deep Learning Model (U-Net + ResNet). This system aims to:
@@ -20,24 +21,29 @@ User Interface (Streamlit)
 Trustworthiness Evaluation
 •	Explainability: Interpret model decisions.
 •	Fairness & Robustness: Check generalization and performance.
-Step 1: Data Preparation
+Table of contents
+1: Data Preparation
 Dataset Structure
 The dataset is stored in Google Drive:
 COVID-19 CT scan lesion segmentation dataset
  DATASET
+ 
   ├── frames/   # Contains CT scan images
   ├── masks/    # Contains segmentation masks
  Mount Google Drive & Set Paths
 
 python
+
 from google.colab import drive
 import os
 # Mount Google Drive
 drive.mount('/content/drive')
+
 # Define dataset paths
 base_path = "/content/drive/MyDrive/COVID/"
 frame_path = os.path.join(base_path, "frames")  # CT scan images
 mask_path = os.path.join(base_path, "masks")    # Segmentation masks
+
 # Verify folders
 if not os.path.exists(frame_path) or not os.path.exists(mask_path):
     print(" Error: Dataset folders are missing!")
@@ -50,9 +56,10 @@ Mounted at /content/drive
  Total CT scan images: 2833
  Total segmentation masks: 2729
 
- Step 2: Preprocess Data
+ 2: Preprocess Data
  Convert Images & Masks into NumPy Arrays
 python
+
 import numpy as np
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 IMG_SIZE = (256, 256)
@@ -79,7 +86,7 @@ print(f" Loaded {train_images.shape[0]} images and {train_masks.shape[0]} masks.
 Output
 Loaded 2729 images and 2729 masks.
 
- Step 3: Train the Hybrid Deep Learning Model (U-Net + ResNet)
+ 3: Train the Hybrid Deep Learning Model (U-Net + ResNet)
  Model Architecture
 •	U-Net is used for segmentation.
 •	ResNet is used for feature extraction.
@@ -160,13 +167,14 @@ model.fit(train_images, train_masks, epochs=10, batch_size=8, validation_split=0
 # Save the trained model
 model.save("/content/drive/MyDrive/COVID/model_weights.h5")
 print(" Model trained and saved successfully!")
+
 Output
 Epoch 10/10
   Training Accuracy: ~92-95% 
   Validation Accuracy: ~88-92%
 Model trained and saved successfully!
 
-Step 4: Deploy FastAPI Backend
+4: Deploy FastAPI Backend
 
 from fastapi import FastAPI, UploadFile, File
 import numpy as np
@@ -177,18 +185,16 @@ from io import BytesIO
 
 app = FastAPI()
 model = tf.keras.models.load_model("/content/drive/MyDrive/COVID/model_weights.h5")
-
 @app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
     image = load_img(BytesIO(await file.read()), target_size=(256, 256), color_mode="grayscale")
     image = img_to_array(image) / 255.0
     image = np.expand_dims(image, axis=0)
-
     prediction = model.predict(image)[0]
     segmented = (prediction > 0.5).astype(np.uint8) * 255
-
     _, buffer = cv2.imencode(".png", segmented)
     return {"segmented_image": buffer.tobytes()}
+    
 API deployed successfully!
 
 API Response:
@@ -198,7 +204,7 @@ CopyEdit
   "segmented_image": "<base64-encoded-png-data>"
 }
 
-Step 5: Build a Streamlit UI
+5: Build a Streamlit UI
 import streamlit as st
 import requests
 st.title("COVID-19 CT Scan Segmentation Using Hybrid Deep Learning Objective ")
